@@ -1,0 +1,4 @@
+include ordersys/schema.sql
+graft ordersys/static
+graft ordersys/templates
+global-exclude *.pyc
