@@ -41,4 +41,3 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
-

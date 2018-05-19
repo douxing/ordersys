@@ -9,7 +9,7 @@ CREATE TABLE user (
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
 
-  is_admin BOOLEAN DEFAULT true
+  is_admin BOOLEAN DEFAULT false
 );
 
 CREATE TABLE post (
@@ -81,6 +81,5 @@ INSERT INTO user (
 ) VALUES (
   'hello',
   'pbkdf2:sha256:50000$Y6nJa6BB$c0ec5d899189cc4085891d06823b16695c509c435a7e8cc1498df3364bbf7d6d',
-  true
+  1
 );
-
