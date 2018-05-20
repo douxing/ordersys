@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}新菜品{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  <label for="title">名称</label>
+  <input name="title" id="title" value="{{ request.form['title'] }}" required>
+  <label for="description">描述</label>
+  <input name="description" id="description" value="{{ request.form['description'] }}" required>
+  <label for="image_url">图片路径</label>
+  <input name="image_url" id="image_url" value="{{ request.form['image_url'] }}" required>
+  <label for="price">价格</label>
+  <input name="price" id="price" value="{{ request.form['price'] }}" required>
+  <label for="quantity">数量</label>
+  <input name="quantity" id="quantity" value="{{ request.form['quantity'] }}" required>
+  <label for="status">状态</label>
+  <input name="status" id="status" value="{{ request.form['status'] }}" required>
+
+  <input type="submit" value="提交">
+</form>
+{% endblock %}
