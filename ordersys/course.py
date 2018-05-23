@@ -28,12 +28,18 @@ def index():
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    try:
+        image_url = request.form['image_url']
+    except KeyError:
+        image_url = '/static/default.png'
+
+    print("image_url: {}".format(image_url))
+
     if request.method == 'POST':
         now = datetime.now()
 
         title = request.form['title']
         description = request.form['description']
-        image_url = request.form['image_url']
         price = request.form['price']
         quantity = request.form['quantity']
         status = request.form['status']
@@ -60,4 +66,5 @@ def create():
             db.commit()
             return redirect(url_for('course.index'))
 
-    return render_template('course/create.html')
+
+    return render_template('course/create.html', image_url=image_url)

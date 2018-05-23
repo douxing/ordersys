@@ -24,3 +24,55 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content textarea { min-height: 12em; resize: vertical; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
+
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.1); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.container {
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.image-grid {
+  height: 90%;
+  max-width: 100%;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  diplay: inline-flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background-color: rgba(0,0,0,0.2);
+  overflow-y: scroll;
+}
+
+.image-grid img {
+  width: 200px;
+  height: 200px;
+  margin: 5px;
+}
+
+.button-grid {
+  display: flex;
+  justify-content: center;
+}
+
+.button-grid .image-button {
+  display: inline-block;
+  width: 100px;
+}
