@@ -25,6 +25,44 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
 
+.course_container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.course_icon_container {
+  flex-basis: 130px;
+}
+
+.course_body_container {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.course_title_line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course_title {
+  flex-basis: 60%;
+}
+
+.edit_button {
+}
+
+.course_description {
+  flex-basis: 100%;
+}
+
+.preview_icon {
+  width: 120px;
+  height: 120px;
+}
+
 #overlay {
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */

@@ -8,5 +8,22 @@
 {% endblock %}
 
 {% block content %}
-<span>hello course content</span>
+{% for course in courses %}
+<article class="course_container">
+  <div class="course_icon_container">
+    <img src="/static/menuicons/{{ course.icon_hashname }}" class="preview_icon" />
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title">{{ course['title'] }}</h1>
+      <span>尚存{{ course['quantity'] }}份</span>
+      <a class="course_edit_button" href="{{ url_for('course.update', id=course['id']) }}">Edit</a>
+    </div>
+    <p class="course_description">{{ course['description'] }}</p>
+    <div>
+      <input name="" type="number" min="0" max="10000000" step="1" />
+    </div>
+  </div>
+</article>
+{% endfor %}
 {% endblock %}

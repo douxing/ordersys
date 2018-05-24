@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -15,25 +15,37 @@ def index():
     db = get_db()
 
     courses = db.execute(
-        'SELECT c.id, c.title, c.description, c.image_url'
+        'SELECT c.id, c.title, c.description, c.icon_hashname'
         ', c.price, c.quantity, c.status'
         ', created_by, created_at, updated_by, updated_at'
         ' FROM course as c'
-        ' WHERE c.status == "on"'
+        # ' WHERE c.status == "on"'
         ' ORDER BY updated_at DESC'
     ).fetchall()
 
     return render_template('course/index.html', courses=courses)
 
+@bp.route('/menuicons')
+@login_required
+def menuicons():
+    db = get_db()
+    
+    icons = db.execute(
+        'SELECT mi.hashname FROM menuicon as mi'
+    ).fetchall()
+
+    
+    icons = [icon['hashname'] for icon in icons]
+
+    return jsonify(icons)
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
     try:
-        image_url = request.form['image_url']
+        icon_hashname = request.form['image_name']
     except KeyError:
-        image_url = '/static/default.png'
-
-    print("image_url: {}".format(image_url))
+        icon_hashname = 'default.png'
 
     if request.method == 'POST':
         now = datetime.now()
@@ -48,6 +60,8 @@ def create():
         updated_by = g.user['id']
         updated_at = now
 
+        error = None
+
         if not title:
             error = 'Title is required.'
 
@@ -57,14 +71,18 @@ def create():
             db = get_db()
             db.execute(
                 'INSERT INTO course'
-                ' (title, description, image_url, price, quantity, status'
+                ' (title, description, icon_hashname, price, quantity, status'
                 ', created_by, created_at, updated_by, updated_at)'
                 ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                (title, description, image_url, price, quantity, status,
+                (title, description, icon_hashname, price, quantity, status,
                  created_by, created_at, updated_by, updated_at)
             )
             db.commit()
             return redirect(url_for('course.index'))
 
+    return render_template('course/create.html', icon_hashname=icon_hashname)
 
-    return render_template('course/create.html', image_url=image_url)
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
+def update(id):
+    return render_template('course/update.html')

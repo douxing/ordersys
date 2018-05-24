@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS menuicon;
 DROP TABLE IF EXISTS course;
 DROP TABLE IF EXISTS order_course;
 DROP TABLE IF EXISTS 'order';
@@ -21,12 +22,16 @@ CREATE TABLE post (
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
+CREATE TABLE menuicon (
+  hashname TEXT PRIMARY KEY
+);
+
 CREATE TABLE course (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
 
   title TEXT NOT NULL,
   description TEXT NOT NULL,
-  image_url TEXT,
+  icon_hashname TEXT NOT NULL DEFAULT 'default.png',
 
   price DECIMAL(10, 2) NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 0,
@@ -38,7 +43,8 @@ CREATE TABLE course (
   updated_by INTEGER NOT NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   
-  FOREIGN KEY (created_by) REFERENCES user (id)
+  FOREIGN KEY (created_by) REFERENCES user (id),
+  FOREIGN KEY (updated_by) REFERENCES user (id)
 );
 
 CREATE TABLE order_course (
@@ -47,7 +53,7 @@ CREATE TABLE order_course (
 
   title TEXT NOT NULL,
   description TEXT NOT NULL,
-  image_url TEXT,
+  icon_hashname TEXT,
 
   price DECIMAL(10, 2) NOT NULL,
   quantity INTEGER NOT NULL,
@@ -82,4 +88,14 @@ INSERT INTO user (
   'hello',
   'pbkdf2:sha256:50000$Y6nJa6BB$c0ec5d899189cc4085891d06823b16695c509c435a7e8cc1498df3364bbf7d6d',
   1
+);
+
+INSERT INTO menuicon (
+  hashname
+) VALUES (
+  'default.png'
+), (
+  'rice.png'
+), (
+  'fried_egg.png'
 );
