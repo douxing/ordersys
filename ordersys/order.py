@@ -10,6 +10,11 @@ from ordersys.db import get_db
 
 bp = Blueprint('order', __name__)
 
+@bp.route('/')
+@login_required
+def index():
+    return render_template('order/index.html')
+
 @bp.route('/<int:id>/view')
 @login_required
 def view(id):
@@ -90,7 +95,7 @@ def create():
         order_courses.append((
             order_id, course_id,
             course['title'], course['description'],
-            course['icon_hashname'], price,
+            course['icon_hashname'], course['price'],
             ids[course_id]
         ))
 
@@ -105,31 +110,35 @@ def create():
 
     return redirect(url_for('order.update', id=order_id))
 
-@bp.route('/<int:id>/update')
+@bp.route('/<int:id>/update', methods=['GET', 'POST'])
 @login_required
 def update(id):
     is_admin = g.user['is_admin']
 
     db = get_db()
 
-    order = db.execute(
-        'SELECT o.price, o.status,'
-        ' o.table_no, o.take_out_address, o.take_out_phone_no,'
-        ' o.created_by, o.created_at, o.updated_by, o.updated_at'
-        " FROM 'order' as o"
-        ' WHERE o.id = ?',
-        (id, )
-    ).fetchone()
+    if request.method == 'POST':
+        pass
+    else: # GET
 
-    if order is None:
-        abort(404, "Order id {0} doesn't exist.".format(id))
+        order = db.execute(
+            'SELECT o.id, o.price, o.status,'
+            ' o.table_no, o.take_out_address, o.take_out_phone_no,'
+            ' o.created_by, o.created_at, o.updated_by, o.updated_at'
+            " FROM 'order' as o"
+            ' WHERE o.id = ?',
+            (id, )
+        ).fetchone()
+
+        if order is None:
+            abort(404, "Order id {0} doesn't exist.".format(id))
         
-    if order['created_by'] != g.user['id'] or not is_admin:
-        abort(403)
+        if order['created_by'] != g.user['id'] or not is_admin:
+            abort(403)
 
-    courses = db.execute(
-        'SELECT * FROM order_course WHERE order_id = ?',
-        (id, )
-    ).fetchall()
+        courses = db.execute(
+            'SELECT * FROM order_course WHERE order_id = ?',
+            (id, )
+        ).fetchall()
 
-    return render_template('order/update.html', order=order, courses=courses)
+        return render_template('order/update.html', order=order, courses=courses)

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}欢迎！{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<article class="post">
+  <header>
+    <a href="{{ url_for('order.index') }}">查看我的订单</a>
+  </header>
+</article>
+{% endblock %}

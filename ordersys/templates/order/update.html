@@ -5,5 +5,35 @@
 {% endblock %}
 
 {% block content %}
-就餐方式
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+
+{% for course in courses %}
+<article class="course_container">
+  <div class="course_icon_container">
+    <img src="/static/menuicons/{{ course.icon_hashname }}" class="preview_icon" />
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title">{{ course['title'] }}</h1>
+      <span>{{ course['price'] }} * {{ course['quantity'] }} 元</span>
+    </div>
+    <p class="course_description">{{ course['description'] }}</p>
+  </div>
+</article>
+{% endfor %}
+
+<article class="course_container">
+  <div class="course_icon_container">
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title"></h1>
+      <span>共 {{ order.price }} 元</span>
+    </div>
+  </div>
+</article>
+
+<form>
+  <input type="submit" value="提交">
+</form>
 {% endblock %}

@@ -33,15 +33,15 @@ def create_app(test_config=None):
     db.init_app(app)
 
     from . import auth
-    app.register_blueprint(auth.bp)
+    app.register_blueprint(auth.bp, url_prefix='/')
 
     from . import blog
-    app.register_blueprint(blog.bp)
+    app.register_blueprint(blog.bp, url_prefix='/blog')
 
     from . import order
-    app.register_blueprint(order.bp)
+    app.register_blueprint(order.bp, url_prefix='/order')
 
     from . import course
-    app.register_blueprint(course.bp)
+    app.register_blueprint(course.bp, url_prefix='/course')
 
     return app
