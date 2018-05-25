@@ -8,6 +8,10 @@
 {% endblock %}
 
 {% block content %}
+<form method="post" action="{{ url_for('order.create') }}">
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='popup.js') }}"></script>
+
 {% for course in courses %}
 <article class="course_container">
   <div class="course_icon_container">
@@ -16,14 +20,22 @@
   <div class="course_body_container">
     <div class="course_title_line">
       <h1 class="course_title">{{ course['title'] }}</h1>
-      <span>尚存{{ course['quantity'] }}份</span>
+      <span>单价 {{ course['price'] }} 元</span>
       <a class="course_edit_button" href="{{ url_for('course.update', id=course['id']) }}">Edit</a>
     </div>
     <p class="course_description">{{ course['description'] }}</p>
-    <div>
-      <input name="" type="number" min="0" max="10000000" step="1" />
+    <div class="course_quantity">
+      <button onclick="dec_qty(event, {{ course['id'] }})" class="qty_button">-</button>
+      <input id="qty_{{ course['id'] }}" class="input_quantity" name="{{ course['id'] }}"
+             type="number" value="0" readonly/>
+      <button onclick="inc_qty(event, {{ course['id'] }})" class="qty_button">+</button>
     </div>
   </div>
 </article>
 {% endfor %}
+
+<div class="submit_order">
+  <button type="submit" class="submit_button">下单</button>
+</div>
+</form>
 {% endblock %}

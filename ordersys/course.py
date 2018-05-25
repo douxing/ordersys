@@ -16,7 +16,7 @@ def index():
 
     courses = db.execute(
         'SELECT c.id, c.title, c.description, c.icon_hashname'
-        ', c.price, c.quantity, c.status'
+        ', c.price, c.status'
         ', created_by, created_at, updated_by, updated_at'
         ' FROM course as c'
         # ' WHERE c.status == "on"'
@@ -53,7 +53,6 @@ def create():
         title = request.form['title']
         description = request.form['description']
         price = request.form['price']
-        quantity = request.form['quantity']
         status = request.form['status']
         created_by = g.user['id']
         created_at = now
@@ -71,10 +70,10 @@ def create():
             db = get_db()
             db.execute(
                 'INSERT INTO course'
-                ' (title, description, icon_hashname, price, quantity, status'
+                ' (title, description, icon_hashname, price, status'
                 ', created_by, created_at, updated_by, updated_at)'
                 ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                (title, description, icon_hashname, price, quantity, status,
+                (title, description, icon_hashname, price, status,
                  created_by, created_at, updated_by, updated_at)
             )
             db.commit()
@@ -82,7 +81,15 @@ def create():
 
     return render_template('course/create.html', icon_hashname=icon_hashname)
 
+@bp.route('/<int:id>/view')
+@login_required
+def view(id):
+    is_admin = g.user['is_admin']
+
+    pass
+    
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
     return render_template('course/update.html')
+

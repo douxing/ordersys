@@ -34,7 +34,6 @@ CREATE TABLE course (
   icon_hashname TEXT NOT NULL DEFAULT 'default.png',
 
   price DECIMAL(10, 2) NOT NULL,
-  quantity INTEGER NOT NULL DEFAULT 0,
 
   status TEXT NOT NULL, /* on, off */
 
@@ -66,7 +65,7 @@ CREATE TABLE order_course (
 CREATE TABLE 'order' (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-  status TEXT NOT NULL, /* new, cancelled, finished */
+  status TEXT NOT NULL, /* new, confirmed, cancelled, finished */
 
   price DECIMAL(10, 2),
 

@@ -20,7 +20,7 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content:last-child { margin-bottom: 0; }
 .content form { margin: 1em 0; display: flex; flex-direction: column; }
 .content label { font-weight: bold; margin-bottom: 0.5em; }
-.content input, .content textarea { margin-bottom: 1em; }
+.content textarea { margin-bottom: 1em; }
 .content textarea { min-height: 12em; resize: vertical; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
@@ -32,10 +32,12 @@ input[type=submit] { align-self: start; min-width: 10em; }
 }
 
 .course_icon_container {
+  height: 120px;
   flex-basis: 130px;
 }
 
 .course_body_container {
+  height: 120px;
   flex-basis: 100%;
   display: flex;
   flex-direction: column;
@@ -47,15 +49,38 @@ input[type=submit] { align-self: start; min-width: 10em; }
   align-items: center;
 }
 
+.course_description {
+  /* flex-basis: 100%; */
+}
+
 .course_title {
   flex-basis: 60%;
 }
 
-.edit_button {
+.course_quantity {
+  display: flex;
+  flex-basis: 32px;
 }
 
-.course_description {
-  flex-basis: 100%;
+.input_quantity {
+  width: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+.qty_button {
+  height: 100%;
+}
+
+.submit_order {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.submit_button {
+  width: 200px;
+  height: 32px;
 }
 
 .preview_icon {
@@ -114,3 +139,4 @@ input[type=submit] { align-self: start; min-width: 10em; }
   display: inline-block;
   width: 100px;
 }
+
