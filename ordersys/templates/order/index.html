@@ -14,7 +14,7 @@
     </div>
     <div class="itemaction">
       {% if order['status'] == 'new' %}
-      <a href="{{ url_for('order.eito', id=order['id'] ) }}">确认</a>
+      <a href="{{ url_for('order.eito', id=order['id'] ) }}">选择配送方式</a>
       &nbsp;
       {% endif %}
       <a href="{{ url_for('order.view', id=order['id'] ) }}">查看</a>

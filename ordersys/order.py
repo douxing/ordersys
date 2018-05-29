@@ -172,7 +172,7 @@ def eito(id):
                     (address, phone, order['id'])
                 )
         else:
-            error = '请选择就餐方式:('
+            error = '请选择配送方式:('
 
         if error:
             flash(error)

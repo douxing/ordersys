@@ -2,7 +2,38 @@
 
 {% block header %}
 <h1>{% block title %}查看订单{{order['id']}}{% endblock %}</h1>
+<a class="action" href="{{ url_for('order.index') }}">我的订单</a>
 {% endblock %}
 
 {% block content %}
+{% for course in courses %}
+<article class="course_container">
+  <div class="course_icon_container">
+    <img src="/static/menuicons/{{ course.icon_hashname }}" class="preview_icon" />
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title">{{ course['title'] }}</h1>
+      <span>{{ course['price'] }} * {{ course['quantity'] }} 元</span>
+    </div>
+    <p class="course_description">{{ course['description'] }}</p>
+  </div>
+</article>
+{% endfor %}
+
+<article class="order_summary">
+  <span>共 {{ order.price }} 元</span>
+</article>
+
+
+<article class="order_summary">
+  {% if order['status'] == 'new' %}
+  <a href="/order/{{order['id']}}/eito">选择配送方式</a>
+  {% elif order['table_no'] %}
+  <span>堂食：桌号<{{order['table_no']}}></span>
+  {% else %}
+  <span>配送至：{{order['take_out_address']}}，电话：{{order['take_out_phone_no']}}</span>  
+  {% endif %}
+</article>
+
 {% endblock %}
