@@ -13,8 +13,6 @@ bp = Blueprint('order', __name__)
 @bp.route('/')
 @login_required
 def index():
-    is_admin = g.user['is_admin']
-
     db = get_db()
 
     orders = db.execute(
@@ -23,6 +21,32 @@ def index():
     ).fetchall()
     
     return render_template('order/index.html', orders=orders)
+
+@bp.route('/all')
+@login_required
+def all():
+    is_admin = g.user['is_admin']
+
+    if not is_admin:
+        abort(401)
+
+    db = get_db()
+
+    filter = request.args.get('filter', 'all')
+
+    if filter in ['new', 'confirmed', 'finished', 'cancelled']:
+        orders = db.execute(
+            "SELECT * FROM 'order' where status=? order by created_at DESC",
+            (filter, )
+        ).fetchall()
+    elif filter == 'all':
+        orders = db.execute(
+            "SELECT * FROM 'order' order by created_at DESC"
+        ).fetchall()
+    else:
+        abort(404)
+    
+    return render_template('order/all.html', orders=orders)
 
 @bp.route('/create', methods=['POST'])
 @login_required

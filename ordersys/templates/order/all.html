@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}我的订单{% endblock %}</h1>
+<a class="action" href="{{ url_for('auth.index') }}">首页</a>
+{% endblock %}
+
+{% block content %}
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script>
+  $(document).ready(function() {
+    var filter = $('#orderfilter');
+    filter.change(function () {
+      var val = $('#orderfilter option:selected').attr('value');
+    });
+  });
+</script>
+
+<article class="item">
+  <select class="orderfilter" id="orderfilter">
+    <option value="confirmed">已选择配送方式的订单</option>
+    <option value="new">未选择配送方式的订单</option>
+    <option value="cancelled">已取消订单</option>
+    <option value="finished">已完成订单</option>
+    <option value="all">所有订单</option>
+  </select>
+</article>
+
+{% for order in orders%}
+<article class="item">
+  <div class="iteminfo">
+    <span class="itemtime">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+    <span>{{order.price}}元</span>
+  </div>
+  <!--
+       <div class="itemaction">
+       {% if order['status'] == 'new' %}
+       <a href="{{ url_for('order.eito', id=order['id'] ) }}">选择配送方式</a>
+       &nbsp;
+       {% endif %}
+       <a href="{{ url_for('order.view', id=order['id'] ) }}">查看</a>
+       </div>
+  -->
+</article>
+{% endfor%}
+{% endblock %}
