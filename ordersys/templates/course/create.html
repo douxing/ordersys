@@ -31,10 +31,12 @@
        class="preview_icon" />
   <button onclick="open_image_chooser(event)">选择</button>
   <label for="price">价格</label>
-  <input name="price" id="price" value="{{ request.form['price'] }}" required>
+  <input name="price" id="price" type="number" step="0.1" value="{{ request.form['price'] }}" required>
   <label for="status">状态</label>
-  <input name="status" id="status" value="{{ request.form['status'] }}" required>
-
+  <select name="status" id="status">
+    <option value ="online">在线</option>
+    <option value ="offline" selected="selected">离线</option>
+  </select>
   <input type="submit" value="提交">
 </form>
 {% endblock %}

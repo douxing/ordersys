@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}欢迎！{% endblock %}</h1>
+<h1>{% block title %}欢迎，{{g.user['username']}}！{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 <article class="post">
-  <header>
+  <div>
     <a href="{{ url_for('order.index') }}">查看我的订单</a>
-  </header>
+  </div>
+  <div>
+    <a href="{{ url_for('course.index') }}">我要点单</a>
+  </div>
 </article>
 {% endblock %}

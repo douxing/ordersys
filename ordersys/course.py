@@ -63,6 +63,13 @@ def create():
 
         if not title:
             error = 'Title is required.'
+        elif not description:
+            error = 'Description is required'
+        else:
+            try:
+                price = round(float(price), 2)
+            except:
+                error = 'Price format error'
 
         if error is not None:
             flash(error)
@@ -72,7 +79,7 @@ def create():
                 'INSERT INTO course'
                 ' (title, description, icon_hashname, price, status'
                 ', created_by, created_at, updated_by, updated_at)'
-                ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 (title, description, icon_hashname, price, status,
                  created_by, created_at, updated_by, updated_at)
             )

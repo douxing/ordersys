@@ -51,29 +51,27 @@
   </div>
 </article>
 
-<form>
-  <article class="">
-    <div>
-      <label for="eatin">堂食</label>
-      <input type="radio" name="eatintakeout" id="eatin" value="eatin"
-             onclick="flop_eatintakeout(event, 'eatin')" />
-      <label for="takeout">外卖</label>
-      <input type="radio" name="eatintakeout" id="takeout" value="takeout"
-             onclick="flop_eatintakeout(event, 'takeout')" />
-    </div>
-    <select id="eatinarea" name="table_no">
-      {% for i in range(g.table_counter) %}
-      <option value="{{i + 1}}">{{i + 1}}号桌</option>
-      {% endfor %}
-    </select>
-    <div id="takeoutarea">
-      <label for="address">配送地址</label>
-      <input id="address" type="text" name="takeout_address" value="form"/>
-      <br>
-      <label for="phone">联系电话</label>
-      <input id="phone" type="tel" name="takeout_phone" />
-    </div>
-  </article>
+<form method="post" action="{{ url_for('order.eito', id=order['id']) }}">
+  <div>
+    <label for="eatin">堂食</label>
+    <input type="radio" name="eatintakeout" id="eatin" value="eatin"
+           onclick="flop_eatintakeout(event, 'eatin')" />
+    <label for="takeout">外卖</label>
+    <input type="radio" name="eatintakeout" id="takeout" value="takeout"
+           onclick="flop_eatintakeout(event, 'takeout')" />
+  </div>
+  <select id="eatinarea" name="table_no">
+    {% for i in range(g.table_counter) %}
+    <option value="{{i + 1}}">{{i + 1}}号桌</option>
+    {% endfor %}
+  </select>
+  <div id="takeoutarea">
+    <label for="address">配送地址</label>
+    <input id="address" type="text" name="takeout_address"/>
+    <br>
+    <label for="phone">联系电话</label>
+    <input id="phone" type="tel" name="takeout_phone" />
+  </div>
 
   <input type="submit" value="提交">
 </form>

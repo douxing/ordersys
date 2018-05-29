@@ -6,7 +6,7 @@ function open_image_chooser(e) {
   document.querySelector("#overlay").style.display = 'block';
 
   $.ajax({
-    url: '/menuicons',
+    url: '/course/menuicons',
     type: 'GET',
     success: function(data, textStatus, jqXHR) {
       var grid = $("#image-grid");
@@ -81,4 +81,3 @@ function inc_qty(e, id) {
     elem.attr('value', "" + num);
   }
 }
-

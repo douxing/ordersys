@@ -13,31 +13,16 @@ bp = Blueprint('order', __name__)
 @bp.route('/')
 @login_required
 def index():
-    return render_template('order/index.html')
-
-@bp.route('/<int:id>/view')
-@login_required
-def view(id):
     is_admin = g.user['is_admin']
 
     db = get_db()
 
-    course = db.execute(
-        'SELECT o.price, o.status,'
-        ' o.table_no, o.take_out_address, o.take_out_phone_no,'
-        ' o.created_by, o.created_at, o.updated_by, o.updated_at'
-        " FROM 'order' as o"
-        ' WHERE o.id = ?'
-        (id, )
-    ).fetchone()
-
-    if course is None:
-        abort(404, "Course id {0} doesn't exist.".format(id))
-        
-    if course['updated_by'] != g.user['id']:
-        abort(403)
-
-    return render_template('course/index.html', courses=courses)
+    orders = db.execute(
+        "SELECT * FROM 'order' where created_by=? order by created_at DESC",
+        (g.user['id'], )
+    ).fetchall()
+    
+    return render_template('order/index.html', orders=orders)
 
 @bp.route('/create', methods=['POST'])
 @login_required
@@ -61,8 +46,8 @@ def create():
     cursor = db.cursor()
 
     courses = cursor.execute(
-        'SELECT c.id, c.title, c.description, c.icon_hashname'
-        ', c.price, c.quantity, c.status'
+        'SELECT c.id, c.title, c.description'
+        ', c.icon_hashname, c.price, c.status'
         ', created_by, created_at, updated_by, updated_at'
         ' FROM course as c'
         ' WHERE c.id IN ({})'.format(','.join('?' * len(ids))),
@@ -73,14 +58,15 @@ def create():
         flash('发生错误,请重新选择:(')
         return redirect(url_for('course.index'))
 
-    price = 0
+    price = 0.0
     for course in courses:
-        price += ids[course['id']] * course['price']
+        quantity = ids[course['id']]
+        price += quantity * course['price']
 
     now = datetime.now()
     cursor.execute(
-        "INSERT INTO 'order' (status, price, table_no,"
-        ' take_out_address, take_out_phone_no'
+        "INSERT INTO 'order' (status, price, table_no"
+        ', take_out_address, take_out_phone_no'
         ', created_by, created_at, updated_by, updated_at)'
         ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         ('new', price, 0, '', '', g.user['id'], now, g.user['id'], now)
@@ -108,37 +94,120 @@ def create():
 
     db.commit()
 
-    return redirect(url_for('order.update', id=order_id))
+    return redirect(url_for('order.eito', id=order_id))
 
-@bp.route('/<int:id>/update', methods=['GET', 'POST'])
+
+@bp.route('/<int:id>/eito', methods=['GET', 'POST'])
 @login_required
-def update(id):
+def eito(id):
     is_admin = g.user['is_admin']
 
     db = get_db()
 
+    order = db.execute(
+        'SELECT o.id, o.price, o.status,'
+        ' o.table_no, o.take_out_address, o.take_out_phone_no,'
+        ' o.created_by, o.created_at, o.updated_by, o.updated_at'
+        " FROM 'order' as o"
+        ' WHERE o.id = ?',
+        (id, )
+    ).fetchone()
+
+    if order is None:
+        abort(404, "Order id {0} doesn't exist.".format(id))
+
+    if order['created_by'] != g.user['id'] or not is_admin:
+        abort(403)
+
+    if order['status'] != 'new':
+        flash('无法更改已提交的订单！')
+        return redirect(url_for('order.index', id=id))
+
+    courses = db.execute(
+        'SELECT * FROM order_course WHERE order_id = ?',
+        (id, )
+    ).fetchall()
+
     if request.method == 'POST':
-        pass
-    else: # GET
+        cursor = db.cursor()
+        error = None
 
-        order = db.execute(
-            'SELECT o.id, o.price, o.status,'
-            ' o.table_no, o.take_out_address, o.take_out_phone_no,'
-            ' o.created_by, o.created_at, o.updated_by, o.updated_at'
-            " FROM 'order' as o"
-            ' WHERE o.id = ?',
-            (id, )
-        ).fetchone()
+        eito = request.form['eatintakeout']
 
-        if order is None:
-            abort(404, "Order id {0} doesn't exist.".format(id))
+        print("eatin or takeout: {}".format(eito))
         
-        if order['created_by'] != g.user['id'] or not is_admin:
-            abort(403)
+        if eito == 'eatin':
+            try:
+                table_no = request.form['table_no']
+                print("table number: {}".format(table_no))
 
-        courses = db.execute(
-            'SELECT * FROM order_course WHERE order_id = ?',
-            (id, )
-        ).fetchall()
+                table_no = int(table_no)
 
-        return render_template('order/update.html', order=order, courses=courses)
+                print("table number: {}, order id: {}".format(table_no, id))
+
+                if table_no <= 0 or table_no > g.table_counter:
+                    error = '桌号错误，请重试:('
+                else:
+                    cursor.execute(
+                        "UPDATE 'order' SET status=?, table_no=?"
+                        ' WHERE id=?',
+                        ('confirmed', table_no, id)
+                    )
+            except:
+                error = '数据错误，请重试:('
+        elif eito == 'takeout':
+            address = request.form['takeout_address']
+            phone = request.form['takeout_phone']
+
+            if len(address) == 0 or len(phone) < 7:
+                error = '数据错误，请重试:('
+            else:
+                cursor.execute(
+                    "UPDATE 'order' SET status='confirmed'"
+                    ", take_out_address=?, take_out_phone_no=?"
+                    'WHERE id=?',
+                    (address, phone, order['id'])
+                )
+        else:
+            error = '数据错误，请重试:('
+
+        if error:
+            flash(error)
+            print("error: {}".format(error))
+            
+            return render_template('order/eito.html', order=order, courses=courses)
+        else:
+            db.commit()
+            return redirect(url_for('order.view', id=id))
+
+    else: # GET
+        return render_template('order/eito.html', order=order, courses=courses)
+
+@bp.route('/<int:id>/view', methods=['GET'])
+@login_required
+def view(id):
+    is_admin = g.user['is_admin']
+
+    db = get_db()
+
+    order = db.execute(
+        'SELECT o.id, o.price, o.status,'
+        ' o.table_no, o.take_out_address, o.take_out_phone_no,'
+        ' o.created_by, o.created_at, o.updated_by, o.updated_at'
+        " FROM 'order' as o"
+        ' WHERE o.id = ?',
+        (id, )
+    ).fetchone()
+
+    if order is None:
+        abort(404, "Order id {0} doesn't exist.".format(id))
+
+    if order['created_by'] != g.user['id'] or not is_admin:
+        abort(403)
+
+    courses = db.execute(
+        'SELECT * FROM order_course WHERE order_id = ?',
+        (id, )
+    ).fetchall()
+
+    return render_template('order/view.html', order=order, courses=courses)

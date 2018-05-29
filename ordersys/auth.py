@@ -57,7 +57,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('auth.index'))
 
         flash(error)
 
@@ -74,9 +74,8 @@ def load_logged_in_user():
         g.user = get_db().execute(
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
-    
-        is_admin = g.user['is_admin']
-        print("user.is_admin: {}".format(is_admin))
+
+    g.table_counter = 9
 
 @bp.route('/logout')
 def logout():

@@ -1,9 +1,24 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}欢迎！{% endblock %}</h1>
+<h1>{% block title %}我的订单{% endblock %}</h1>
+<a class="action" href="{{ url_for('auth.index') }}">首页</a>
 {% endblock %}
 
 {% block content %}
-hello　我的订单
+{% for order in orders%}
+<article class="item">
+    <div class="iteminfo">
+      <span class="itemtime">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      <span>{{order.price}}元</span>
+    </div>
+    <div class="itemaction">
+      {% if order['status'] == 'new' %}
+      <a href="{{ url_for('order.eito', id=order['id'] ) }}">确认</a>
+      &nbsp;
+      {% endif %}
+      <a href="{{ url_for('order.view', id=order['id'] ) }}">查看</a>
+    </div>
+</article>
+{% endfor%}
 {% endblock %}

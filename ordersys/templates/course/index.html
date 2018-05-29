@@ -8,9 +8,10 @@
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{ url_for('order.create') }}">
 <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='popup.js') }}"></script>
+
+<form method="post" action="{{ url_for('order.create') }}">
 
 {% for course in courses %}
 <article class="course_container">

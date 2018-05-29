@@ -23,7 +23,8 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content textarea { margin-bottom: 1em; }
 .content textarea { min-height: 12em; resize: vertical; }
 input.danger { color: #cc2f2e; }
-input[type=submit] { align-self: start; min-width: 10em; }
+
+input[type=submit] { align-self: start; min-width: 10em; margin-top: 1em;}
 
 .course_container {
   margin-top: 20px;
@@ -140,3 +141,29 @@ input[type=submit] { align-self: start; min-width: 10em; }
   width: 100px;
 }
 
+/* order.eito*/
+
+#eatinarea {
+  display: none;
+}
+
+#takeoutarea {
+  display: none;
+}
+
+/* order.index */
+
+.item {
+  display: flex;
+  flex-direction: column;
+}
+
+.iteminfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.itemaction {
+  display: flex;
+  justify-content: flex-end;
+}
