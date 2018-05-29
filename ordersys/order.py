@@ -132,9 +132,10 @@ def eito(id):
         cursor = db.cursor()
         error = None
 
-        eito = request.form['eatintakeout']
-
-        print("eatin or takeout: {}".format(eito))
+        try:
+            eito = request.form['eatintakeout']
+        except KeyError:
+            eito = None
         
         if eito == 'eatin':
             try:
@@ -159,8 +160,10 @@ def eito(id):
             address = request.form['takeout_address']
             phone = request.form['takeout_phone']
 
-            if len(address) == 0 or len(phone) < 7:
-                error = '数据错误，请重试:('
+            if len(address) == 0:
+                error = '配送地址不能为空:('
+            elif len(phone) < 7:
+                error = '配送号码长度不足:('
             else:
                 cursor.execute(
                     "UPDATE 'order' SET status='confirmed'"
@@ -169,12 +172,10 @@ def eito(id):
                     (address, phone, order['id'])
                 )
         else:
-            error = '数据错误，请重试:('
+            error = '请选择就餐方式:('
 
         if error:
             flash(error)
-            print("error: {}".format(error))
-            
             return render_template('order/eito.html', order=order, courses=courses)
         else:
             db.commit()
