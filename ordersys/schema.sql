@@ -69,7 +69,7 @@ CREATE TABLE 'order' (
 
   price DECIMAL(10, 2),
 
-  table_no INTEGER, /* NULL means take out */
+  table_no INTEGER NOT NULL DEFAULT 0, /* 0 means take out */
   take_out_address TEXT DEFAULT NULL, /* */
   take_out_phone_no TEXT DEFAULT NULL,
 

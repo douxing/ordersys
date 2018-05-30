@@ -172,7 +172,7 @@ def eito(id):
 
                 print("table number: {}, order id: {}".format(table_no, id))
 
-                if table_no <= 0 or table_no > g.table_counter:
+                if table_no < 0 or table_no > g.table_counter:
                     error = '桌号错误，请重试:('
                 else:
                     cursor.execute(
@@ -194,10 +194,10 @@ def eito(id):
             else:
                 cursor.execute(
                     "UPDATE 'order' SET status='confirmed'"
-                    ", take_out_address=?, take_out_phone_no=?"
+                    ", table_no=?, take_out_address=?, take_out_phone_no=?"
                     ', updated_by=?, updated_at=?'
                     'WHERE id=?',
-                    (address, phone, g.user['id'], now, order['id'])
+                    (0, address, phone, g.user['id'], now, order['id'])
                 )
         else:
             error = '请选择配送方式:('

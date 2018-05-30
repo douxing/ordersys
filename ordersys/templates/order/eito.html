@@ -49,22 +49,30 @@
   <div>
     <label for="eatin">堂食</label>
     <input type="radio" name="eatintakeout" id="eatin" value="eatin"
+           {% if order['table_no'] > 0 %}
+           checked
+           {% endif %}
            onclick="flop_eatintakeout(event, 'eatin')" />
     <label for="takeout">外卖</label>
     <input type="radio" name="eatintakeout" id="takeout" value="takeout"
+           {% if order['table_no'] == 0 %}
+           checked
+           {% endif %}
            onclick="flop_eatintakeout(event, 'takeout')" />
   </div>
-  <select id="eatinarea" name="table_no">
+  <select id="eatinarea" name="table_no" {% if order['table_no'] > 0 %} style="display: block;" {% endif %}>
     {% for i in range(g.table_counter) %}
     <option value="{{i + 1}}">{{i + 1}}号桌</option>
     {% endfor %}
   </select>
-  <div id="takeoutarea">
+  <div id="takeoutarea" {% if order['table_no'] == 0 %} style="display: block;" {% endif %}>
     <label for="address">配送地址</label>
-    <input id="address" type="text" name="takeout_address"/>
+    <input id="address" type="text" name="takeout_address"
+           value="{{ order['take_out_address'] }}" />
     <br>
     <label for="phone">联系电话</label>
-    <input id="phone" type="tel" name="takeout_phone" />
+    <input id="phone" type="tel" name="takeout_phone" 
+           value="{{ order['take_out_phone_no'] }}" />
   </div>
 
   <input type="submit" value="提交">
