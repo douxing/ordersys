@@ -10,19 +10,36 @@
 <script>
   $(document).ready(function() {
     var filter = $('#orderfilter');
+
     filter.change(function () {
       var val = $('#orderfilter option:selected').attr('value');
+      var url = window.location.href.split('?')[0];
+      window.location.href = url + '?filter=' + val;
     });
+
+    var qs = window.location.href.split('?')[1].split('&');
+    var key = 'filter=';
+    var value = 'all'
+
+    for (var i in qs) {
+      var index = qs[i].indexOf(key);
+      if (index !== -1) {
+        // found!
+        value = qs[i].substring(index + key.length);
+      }
+    }
+
+    filter.val(value);
   });
 </script>
 
 <article class="item">
   <select class="orderfilter" id="orderfilter">
-    <option value="confirmed">已选择配送方式的订单</option>
-    <option value="new">未选择配送方式的订单</option>
-    <option value="cancelled">已取消订单</option>
-    <option value="finished">已完成订单</option>
-    <option value="all">所有订单</option>
+    <option id="confirmed" value="confirmed">已选择配送方式的订单</option>
+    <option id="new" value="new">未选择配送方式的订单</option>
+    <option id="cancelled" value="cancelled">已取消订单</option>
+    <option id="finished" value="finished">已完成订单</option>
+    <option id="all" value="all">所有订单</option>
   </select>
 </article>
 
