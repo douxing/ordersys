@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}配送方式{% endblock %}</h1>
+<h1>{% block title %}订单详细 {{order['id']}}{% endblock %}</h1>
 <a class="action" href="{{ url_for('order.index') }}">我的订单</a>
 {% endblock %}
 
@@ -49,32 +49,92 @@
   <div>
     <label for="eatin">堂食</label>
     <input type="radio" name="eatintakeout" id="eatin" value="eatin"
-           {% if order['table_no'] > 0 %}
-           checked
-           {% endif %}
+           {% if order['table_no'] > 0 %} checked {% endif %}
+           {% if order['status'] != 'new' %} disabled {% endif %}
+    
            onclick="flop_eatintakeout(event, 'eatin')" />
     <label for="takeout">外卖</label>
     <input type="radio" name="eatintakeout" id="takeout" value="takeout"
-           {% if order['table_no'] == 0 %}
-           checked
-           {% endif %}
+           {% if order['table_no'] == 0 %} checked {% endif %}
+           {% if order['status'] != 'new' %} disabled {% endif %}
            onclick="flop_eatintakeout(event, 'takeout')" />
   </div>
-  <select id="eatinarea" name="table_no" {% if order['table_no'] > 0 %} style="display: block;" {% endif %}>
+  <select id="eatinarea" name="table_no"
+          {% if order['status'] != 'new' %} disabled {% endif %}
+          {% if order['table_no'] == 0 %} style="display:none;" {% endif %}>
     {% for i in range(g.table_counter) %}
     <option value="{{i + 1}}">{{i + 1}}号桌</option>
     {% endfor %}
   </select>
-  <div id="takeoutarea" {% if order['table_no'] == 0 %} style="display: block;" {% endif %}>
+  <div id="takeoutarea"
+       {% if order['table_no'] > 0 %} style="display:none;" {% endif %}>
     <label for="address">配送地址</label>
     <input id="address" type="text" name="takeout_address"
+           {% if order['status'] != 'new' %} disabled {% endif %}
+
            value="{{ order['take_out_address'] }}" />
     <br>
     <label for="phone">联系电话</label>
     <input id="phone" type="tel" name="takeout_phone" 
+           {% if order['status'] != 'new' %} disabled {% endif %}
+
            value="{{ order['take_out_phone_no'] }}" />
   </div>
 
-  <input type="submit" value="提交">
+  <input type="submit"
+         {% if order['status'] != 'new' %} disabled {% endif %}
+         value="提交">
 </form>
+
+{% if g.user['is_admin'] %}
+<article class="order_summary">
+  <select class="orderfilter" id="orderfilter">
+    <option id="new" value="new"
+            {% if order['status'] == 'new' %}
+            selected
+            {% endif %}>
+      未选择配送方式的订单</option>
+    <option id="confirmed" value="confirmed"
+            {% if order['status'] == 'confirmed' %}
+            selected
+            {% endif %}>
+      已选择配送方式的订单</option>
+    <option id="cancelled" value="cancelled"
+            {% if order['status'] == 'cancelled' %}
+            selected
+            {% endif %}>
+      已取消订单</option>
+    <option id="finished" value="finished"
+            {% if order['status'] == 'finished' %}
+            selected
+            {% endif %}>
+      已完成订单</option>
+  </select>
+</article>
+
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script>
+  $(document).ready(function() {
+    var filter = $('#orderfilter');
+    filter.change(function () {
+      var val = $('#orderfilter option:selected').attr('value');
+      var id = window.location.pathname.split('/')[2];
+
+      $.ajax({
+        url: '/order/' + id + '/update_status',
+        type: 'POST',
+        data: JSON.stringify({ status: val }),
+        contentType: "application/json",
+        success: function(data, textStatus, jqXHR) {
+          window.location.reload(true);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert('请重试!');          
+        },
+      });
+    });
+  });
+</script>
+{% endif %}
+
 {% endblock %}

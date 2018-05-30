@@ -143,74 +143,67 @@ def eito(id):
     if order['created_by'] != g.user['id'] or not is_admin:
         abort(403)
 
-    if order['status'] != 'new':
-        flash('无法更改已提交的订单！')
-        return redirect(url_for('order.index', id=id))
-
     courses = db.execute(
         'SELECT * FROM order_course WHERE order_id = ?',
         (id, )
     ).fetchall()
 
-    if request.method == 'POST':
-        cursor = db.cursor()
-        error = None
+    if (request.method == 'GET' or
+        order['status'] != 'new'):
+        return render_template('order/eito.html', order=order, courses=courses)
 
+    cursor = db.cursor()
+    error = None
+
+    try:
+        eito = request.form['eatintakeout']
+    except KeyError:
+        eito = None
+
+    now = datetime.now()
+
+    if eito == 'eatin':
         try:
-            eito = request.form['eatintakeout']
-        except KeyError:
-            eito = None
+            table_no = int(request.form['table_no'])
 
-        now = datetime.now()
+            print("table number: {}, order id: {}".format(table_no, id))
 
-        if eito == 'eatin':
-            try:
-                table_no = request.form['table_no']
-                print("table number: {}".format(table_no))
-
-                table_no = int(table_no)
-
-                print("table number: {}, order id: {}".format(table_no, id))
-
-                if table_no < 0 or table_no > g.table_counter:
-                    error = '桌号错误，请重试:('
-                else:
-                    cursor.execute(
-                        "UPDATE 'order' SET status=?, table_no=?"
-                        ', updated_by=?, updated_at=?'
-                        ' WHERE id=?',
-                        ('confirmed', table_no, g.user['id'], now, id)
-                    )
-            except:
-                error = '数据错误，请重试:('
-        elif eito == 'takeout':
-            address = request.form['takeout_address']
-            phone = request.form['takeout_phone']
-
-            if len(address) == 0:
-                error = '配送地址不能为空:('
-            elif len(phone) < 7:
-                error = '配送号码长度不足:('
+            if table_no < 0 or table_no > g.table_counter:
+                error = '桌号错误，请重试:('
             else:
                 cursor.execute(
-                    "UPDATE 'order' SET status='confirmed'"
-                    ", table_no=?, take_out_address=?, take_out_phone_no=?"
+                    "UPDATE 'order' SET status=?, table_no=?"
                     ', updated_by=?, updated_at=?'
-                    'WHERE id=?',
-                    (0, address, phone, g.user['id'], now, order['id'])
+                    ' WHERE id=?',
+                    ('confirmed', table_no, g.user['id'], now, id)
                 )
-        else:
-            error = '请选择配送方式:('
+        except:
+            error = '数据错误，请重试:('
+    elif eito == 'takeout':
+        address = request.form['takeout_address']
+        phone = request.form['takeout_phone']
 
-        if error:
-            flash(error)
-            return render_template('order/eito.html', order=order, courses=courses)
+        if len(address) == 0:
+            error = '配送地址不能为空:('
+        elif len(phone) < 7:
+            error = '配送号码长度不足:('
         else:
-            db.commit()
-            return redirect(url_for('order.view', id=id))
+            cursor.execute(
+                "UPDATE 'order' SET status='confirmed'"
+                ", table_no=?, take_out_address=?, take_out_phone_no=?"
+                ', updated_by=?, updated_at=?'
+                'WHERE id=?',
+                (0, address, phone, g.user['id'], now, order['id'])
+            )
+    else:
+        error = '请选择配送方式:('
 
-    else: # GET
-        return render_template('order/eito.html', order=order, courses=courses)
+    if error:
+        flash(error)
+    else:
+        db.commit()
+
+    return render_template('order/eito.html', order=order, courses=courses)
 
 @bp.route('/<int:id>/view', methods=['GET'])
 @login_required
