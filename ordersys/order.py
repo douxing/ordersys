@@ -19,7 +19,7 @@ def index():
         "SELECT * FROM 'order' where created_by=? order by created_at DESC",
         (g.user['id'], )
     ).fetchall()
-    
+
     return render_template('order/index.html', orders=orders)
 
 @bp.route('/all')
@@ -45,7 +45,7 @@ def all():
         ).fetchall()
     else:
         abort(404)
-    
+
     return render_template('order/all.html', orders=orders)
 
 @bp.route('/create', methods=['POST'])
@@ -160,7 +160,9 @@ def eito(id):
             eito = request.form['eatintakeout']
         except KeyError:
             eito = None
-        
+
+        now = datetime.now()
+
         if eito == 'eatin':
             try:
                 table_no = request.form['table_no']
@@ -175,8 +177,9 @@ def eito(id):
                 else:
                     cursor.execute(
                         "UPDATE 'order' SET status=?, table_no=?"
+                        ', updated_by=?, updated_at=?'
                         ' WHERE id=?',
-                        ('confirmed', table_no, id)
+                        ('confirmed', table_no, g.user['id'], now, id)
                     )
             except:
                 error = '数据错误，请重试:('
@@ -192,8 +195,9 @@ def eito(id):
                 cursor.execute(
                     "UPDATE 'order' SET status='confirmed'"
                     ", take_out_address=?, take_out_phone_no=?"
+                    ', updated_by=?, updated_at=?'
                     'WHERE id=?',
-                    (address, phone, order['id'])
+                    (address, phone, g.user['id'], now, order['id'])
                 )
         else:
             error = '请选择配送方式:('
@@ -236,3 +240,37 @@ def view(id):
     ).fetchall()
 
     return render_template('order/view.html', order=order, courses=courses)
+
+@bp.route('/<int:id>/update_status', methods=['POST'])
+@login_required
+def update_status(id):
+    is_admin = g.user['is_admin']
+
+    if not is_admin:
+        abort(401)
+
+    db = get_db()
+    now = datetime.now()
+
+    try:
+        data = request.get_json()
+        status = data.get('status', None)
+    except:
+        print('invalid status: {}'.format(status))
+        abort(403)
+
+
+    if status in ['new', 'confirmed', 'cancelled', 'finished']:
+        db.execute(
+            "UPDATE 'order' SET status=?"
+            ', updated_by=?, updated_at=?'
+            ' WHERE id=?',
+            (status, g.user['id'], now, id)
+        )
+
+        db.commit()
+
+        return jsonify({ 'status': status })
+    else:
+        print('invalid status: {}'.format(status))
+        abort(403)

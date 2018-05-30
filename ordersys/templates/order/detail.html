@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}确认订单{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script>
+  function flop_eatintakeout(e, name) {
+    var event = e ? e : window.event;
+    event.stopPropagation();
+    // event.preventDefault();
+
+    var eatin = $("#eatinarea");
+    var takeout = $("#takeoutarea");
+
+    if (name === 'eatin') {
+      eatin.css('display', 'block');
+      takeout.css('display', 'none');
+    } else {
+      takeout.css('display', 'block');
+      eatin.css('display', 'none');
+    }
+  }
+</script>
+
+{% for course in courses %}
+<article class="course_container">
+  <div class="course_icon_container">
+    <img src="/static/menuicons/{{ course.icon_hashname }}" class="preview_icon" />
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title">{{ course['title'] }}</h1>
+      <span>{{ course['price'] }} * {{ course['quantity'] }} 元</span>
+    </div>
+    <p class="course_description">{{ course['description'] }}</p>
+  </div>
+</article>
+{% endfor %}
+
+<article class="course_container">
+  <div class="course_icon_container">
+  </div>
+  <div class="course_body_container">
+    <div class="course_title_line">
+      <h1 class="course_title"></h1>
+      <span>共 {{ order.price }} 元</span>
+    </div>
+  </div>
+</article>
+
+<form>
+  <article class="">
+    <div>
+      <label for="eatin">堂食</label>
+      <input type="radio" name="eatintakeout" id="eatin" value="eatin"
+             onclick="flop_eatintakeout(event, 'eatin')" />
+      <label for="takeout">外卖</label>
+      <input type="radio" name="eatintakeout" id="takeout" value="takeout"
+             onclick="flop_eatintakeout(event, 'takeout')" />
+    </div>
+    <select id="eatinarea" name="table_no">
+      {% for i in range(g.table_counter) %}
+      <option value="{{i + 1}}">{{i + 1}}号桌</option>
+      {% endfor %}
+    </select>
+    <div id="takeoutarea">
+      <label for="address">配送地址</label>
+      <input id="address" type="text" name="takeout_address" value="form"/>
+      <br>
+      <label for="phone">联系电话</label>
+      <input id="phone" type="tel" name="takeout_phone" />
+    </div>
+  </article>
+
+  <input type="submit" value="提交">
+</form>
+{% endblock %}
