@@ -1,9 +1,45 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Course{% endblock %}</h1>
+<h1>{% block title %}更新菜品{% endblock %}</h1>
+<a class="action" href="{{ url_for('auth.index') }}">首页</a>
 {% endblock %}
 
 {% block content %}
-<div>course update</div>
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='popup.js') }}"></script>
+
+<div id="overlay" onclick="close_image_chooser(event)">
+  <div class="container">
+    <div id="image-grid" class="image-grid">
+    </div>
+    <div class="button-grid">
+      <button class="image-button">上传</button>
+    </div>
+  </div>
+</div>
+
+<form method="post">
+  <label for="title">名称</label>
+  <input name="title" id="title" value="{{ course['title'] }}" required>
+  <label for="description">描述</label>
+  <input name="description" id="description" value="{{ course['description'] }}" required>
+  <label for="icon_hashname">图标</label>
+  <input name="icon_hashname" id="icon_hashname"
+         value="{{ course['icon_hashname'] }}" required>
+  <img id="preview_icon"
+       src="/static/menuicons/{{ course['icon_hashname'] }}"
+       class="preview_icon" />
+  <button onclick="open_image_chooser(event)">选择</button>
+  <label for="price">价格</label>
+  <input name="price" id="price" type="number" step="0.1" value="{{ course['price'] }}" required>
+  <label for="status">状态</label>
+  <select name="status" id="status">
+    <option value ="online"
+            {% if course['status'] == 'online' %} selected {% endif %} >在线</option>
+    <option value ="offline"
+            {% if course['status'] == 'offline' %} selected {% endif %} >离线</option>
+  </select>
+  <input type="submit" value="提交">
+</form>
 {% endblock %}

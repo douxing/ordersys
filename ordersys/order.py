@@ -150,6 +150,9 @@ def eito(id):
 
     if (request.method == 'GET' or
         order['status'] != 'new'):
+        print('order.table_no: {}'.format(order['table_no']))
+        print('order.status: {}'.format(order['status']))
+        
         return render_template('order/eito.html', order=order, courses=courses)
 
     cursor = db.cursor()
@@ -203,7 +206,7 @@ def eito(id):
     else:
         db.commit()
 
-    return render_template('order/eito.html', order=order, courses=courses)
+    return redirect(url_for('order.eito', id=id))
 
 @bp.route('/<int:id>/view', methods=['GET'])
 @login_required
@@ -248,13 +251,15 @@ def update_status(id):
     try:
         data = request.get_json()
         status = data.get('status', None)
+        print('to set status: {}'.format(status))
     except:
         print('invalid status: {}'.format(status))
         abort(403)
 
 
     if status in ['new', 'confirmed', 'cancelled', 'finished']:
-        db.execute(
+        cursor = db.cursor()
+        cursor.execute(
             "UPDATE 'order' SET status=?"
             ', updated_by=?, updated_at=?'
             ' WHERE id=?',
@@ -262,6 +267,13 @@ def update_status(id):
         )
 
         db.commit()
+
+        d = cursor.execute(
+            "SELECT * FROM 'order' WHERE id=?",
+            (id, )
+        ).fetchone()
+
+        print('new status: {}'.format(d['status']))
 
         return jsonify({ 'status': status })
     else:

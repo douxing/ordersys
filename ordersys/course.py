@@ -42,8 +42,13 @@ def menuicons():
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    is_admin = g.user['is_admin']
+
+    if not is_admin:
+        abort(401)
+
     try:
-        icon_hashname = request.form['image_name']
+        icon_hashname = request.form['icon_hashname']
     except KeyError:
         icon_hashname = 'default.png'
 
@@ -91,12 +96,65 @@ def create():
 @bp.route('/<int:id>/view')
 @login_required
 def view(id):
-    is_admin = g.user['is_admin']
-
     pass
     
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    return render_template('course/update.html')
+    is_admin = g.user['is_admin']
 
+    if not is_admin:
+        abort(401)
+
+    db = get_db()
+
+    course = db.execute(
+        'SELECT * FROM course WHERE id=?',
+        (id, )
+    ).fetchone()
+
+    if request.method == 'GET':
+        return render_template('course/update.html', course=course)
+
+    try:
+        icon_hashname = request.form['icon_hashname']
+    except KeyError:
+        icon_hashname = 'default.png'
+
+    now = datetime.now()
+    
+    title = request.form['title']
+    description = request.form['description']
+    price = request.form['price']
+    status = request.form['status']
+    created_by = g.user['id']
+    created_at = now
+    updated_by = g.user['id']
+    updated_at = now
+
+    error = None
+
+    if not title:
+        error = 'Title is required.'
+    elif not description:
+        error = 'Description is required'
+    else:
+        try:
+            price = round(float(price), 2)
+        except:
+            error = '价格格式错误:('
+
+    if error is not None:
+        flash(error)
+        return render_template('course/update.html', course=course)
+    else:
+        db.execute(
+            'UPDATE course SET'
+            ' title=?, description=?, icon_hashname=?, price=?, status=?'
+            ', created_by=?, created_at=?, updated_by=?, updated_at=?'
+            ' WHERE id=?',
+            (title, description, icon_hashname, price, status,
+             created_by, created_at, updated_by, updated_at, id)
+        )
+        db.commit()
+        return redirect(url_for('course.index'))    

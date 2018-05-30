@@ -2,8 +2,9 @@
 
 {% block header %}
 <h1>{% block title %}Course{% endblock %}</h1>
-{% if g.user %}
-<a class="action" href="{{ url_for('course.create') }}">New</a>
+<a class="action" href="{{ url_for('auth.index') }}">首页</a>
+{% if g.user['is_admin'] %}
+<a class="action" href="{{ url_for('course.create') }}">新菜品</a>
 {% endif %}
 {% endblock %}
 
@@ -16,13 +17,15 @@
 {% for course in courses %}
 <article class="course_container">
   <div class="course_icon_container">
-    <img src="/static/menuicons/{{ course.icon_hashname }}" class="preview_icon" />
+    <img src="/static/menuicons/{{ course['icon_hashname'] }}" class="preview_icon" />
   </div>
   <div class="course_body_container">
     <div class="course_title_line">
       <h1 class="course_title">{{ course['title'] }}</h1>
       <span>单价 {{ course['price'] }} 元</span>
+      {% if g.user['is_admin'] %}
       <a class="course_edit_button" href="{{ url_for('course.update', id=course['id']) }}">Edit</a>
+      {% endif %}
     </div>
     <p class="course_description">{{ course['description'] }}</p>
     <div class="course_quantity">
