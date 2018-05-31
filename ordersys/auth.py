@@ -9,6 +9,10 @@ from ordersys.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+@bp.route('/hello')
+def hello():
+    return render_template('auth/hello.html')
+
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
