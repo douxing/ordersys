@@ -49,8 +49,11 @@
 {% for order in orders%}
 <article class="item">
   <div class="iteminfo">
-    <span class="itemtime">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
-    <span>{{order.price}}元</span>
+    <span class="itemtime">
+      {{ order.id }}
+      ({{ order.created_at.strftime('%Y-%m-%d %H:%M') }})
+    </span>
+    <span>{{order['price']}}元</span>
     <a href="{{ url_for('order.eito', id=order['id']) }}">详细</a>
   </div>
   <!--

@@ -140,7 +140,7 @@ def eito(id):
     if order is None:
         abort(404, "Order id {0} doesn't exist.".format(id))
 
-    if order['created_by'] != g.user['id'] or not is_admin:
+    if order['created_by'] != g.user['id'] and not is_admin:
         abort(403)
 
     courses = db.execute(

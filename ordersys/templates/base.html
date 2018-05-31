@@ -15,10 +15,10 @@
       <span>(管理员)</span>
       {% endif %}
     </li>
-    <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+    <li><a href="{{ url_for('auth.logout') }}">登出</a></li>
     {% else %}
-    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-    <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+    <li><a href="{{ url_for('auth.register') }}">注册</a></li>
+    <li><a href="{{ url_for('auth.login') }}">登录</a></li>
     {% endif %}
   </ul>
 </nav>

@@ -48,6 +48,42 @@ function choose_image(e) {
   document.querySelector("#overlay").style.display = 'none';
 }
 
+function file_click(e) {
+  var event = e ? e : window.event;
+  event.stopPropagation();
+}
+
+function upload_click(e) {
+  var event = e ? e : window.event;
+  event.stopPropagation();
+
+  var form_data = new FormData($('#upload-file')[0]);
+
+  $.ajax({
+    type:  'POST',
+    url: '/course/upload_icon',
+    data: form_data,
+    contentType: false,
+    cache: false,
+    processData: false,
+    async: false,
+    success: function(data, textStatus, jqXHR) {
+      var grid = $("#image-grid");
+
+      var path = "/static/menuicons/" + data.name;
+      var img = $('<img src="' + path + '"' + ' />');
+      img.click(function () {
+        $("#icon_hashname").attr('value', data.name);
+        $("#preview_icon").attr('src', path);
+      });
+      grid.append(img);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log('Error!');
+    },
+  });
+}
+
 function dec_qty(e, id) {
   var event = e ? e : window.event;
   event.stopPropagation();

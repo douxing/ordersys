@@ -84,9 +84,13 @@ CREATE TABLE 'order' (
 INSERT INTO user (
   username, password, is_admin
 ) VALUES (
-  'hello',
-  'pbkdf2:sha256:50000$Y6nJa6BB$c0ec5d899189cc4085891d06823b16695c509c435a7e8cc1498df3364bbf7d6d',
+  'admin',
+  'pbkdf2:sha256:50000$9kA3XtO5$260400438fdf448540971595b4bb9ad8d57c0afa07e627d63871cf16b2027032',
   1
+), (
+   'user',
+   'pbkdf2:sha256:50000$gxO1YJ6g$d54b5972ec8e580fb0d7dc98648d79268eb73aa6f08d7a4a8300434e7ecaf814',
+   0
 );
 
 INSERT INTO menuicon (

@@ -13,9 +13,10 @@
   <div class="container">
     <div id="image-grid" class="image-grid">
     </div>
-    <div class="button-grid">
-      <button class="image-button">上传</button>
-    </div>
+    <form id="upload-file" class="button-grid">
+      <input type="file" name="file" class="image-button"
+             onclick="file_click(event)" onchange="upload_click(event)"></input>
+    </form>
   </div>
 </div>
 
@@ -26,7 +27,7 @@
   <input name="description" id="description" value="{{ course['description'] }}" required>
   <label for="icon_hashname">图标</label>
   <input name="icon_hashname" id="icon_hashname"
-         value="{{ course['icon_hashname'] }}" required>
+         value="{{ course['icon_hashname'] }}" required hidden>
   <img id="preview_icon"
        src="/static/menuicons/{{ course['icon_hashname'] }}"
        class="preview_icon" />
